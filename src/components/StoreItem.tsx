@@ -17,6 +17,11 @@ return (
     height="200px" 
     style={{objectFit: "cover"}}
     />
+    <Card.Body className="d-flex flex-column">
+        <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
+
+        </Card.Title>
+    </Card.Body>
 </Card>
 )
 } 
