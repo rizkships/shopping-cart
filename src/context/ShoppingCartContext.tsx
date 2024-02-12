@@ -49,8 +49,27 @@ export function ShoppingCartProvider({children}:
                 }
             })
         }
+
+        function decreaseCartQuantity(id: number){
+          
+            setCartItems(currItems => {
+                if (currItems.find(item => item.id === id)?.quantity === 1){ // if the quantity in our cart is 1, get rid of it
+                    return currItems.filter(item => item.id !== id) // this will return a new list of all our items and all of them are going to be exactly the same but whichever one we pass the id of in the function param, we're going to remove that from our list of items. and if we pass the id of an item that doesnt exist, this is still just going to return us the current list so it doesnt matter 
+
+                } else { // otherwise, if the item exists, all we need to do is increment the quantity by 1
+                    return currItems.map(item => {
+                        if (item.id === id) { // if we found our item
+                            return {...item, quantity: item.quantity - 1} // keep everything the same and increment quantity by 1
+                        } else {
+                            return item 
+                        }
+                    })
+                }
+            })
+        }
+
     return (
-    <ShoppingCartContext.Provider value={{getItemQuantity, increaseCartQuantity}}>
+    <ShoppingCartContext.Provider value={{getItemQuantity, increaseCartQuantity, decreaseCartQuantity}}>
         {children}
     </ShoppingCartContext.Provider>
     )
