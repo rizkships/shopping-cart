@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useReducer } from "react";
 import { useState } from "react";
 
 type ShoppingCartProviderProps = {
@@ -11,10 +11,14 @@ type CartItem = {
 }
 
 type ShoppingCartContext = {
+    openCart: () => void
+    closeCart: () => void 
     getItemQuantity: (id: number ) => number
     increaseCartQuantity: (id: number ) => void
     decreaseCartQuantity: (id: number ) => void
     removeFromCart: (id: number ) => void
+    cartQuantity: number
+    cartItems: cartItem[]
 }
 
 const ShoppingCartContext = createContext({} as ShoppingCartContext)
@@ -27,12 +31,18 @@ export function useShoppingCart() {
 
 export function ShoppingCartProvider({children}:
     ShoppingCartProviderProps) {
+        const [isOpen, setIsOpen] = useState(false)
         const [cartItems, setCartItems] = useState<CartItem[]>([])
+
+        const cartQuantity = cartItems.reduce(
+            (quantity, item) => item.quantity + quantity, 0)
+        
+        const openCart = () => setIsOpen(true)
+        const closeCart = () => setIsOpen(false)
 
         function getItemQuantity(id: number){
             return cartItems.find(item => item.id === id)?.quantity || 0
         }
-
         function increaseCartQuantity(id: number){
             // if we can find an items inside of our cart, then we have an item, so we want to check to see if we dont have an item, because 
             // if our item doesn't already exist in the cart, then we need to add it to cart.
@@ -50,7 +60,6 @@ export function ShoppingCartProvider({children}:
                 }
             })
         }
-
         function decreaseCartQuantity(id: number){
           
             setCartItems(currItems => {
@@ -68,7 +77,6 @@ export function ShoppingCartProvider({children}:
                 }
             })
         }
-
         function removeFromCart(id:number){
             setCartItems(currItems => {
                 return currItems.filter(item => item.id !== id) // all we are doing is filtering out items where the id does not equal our current item id
@@ -76,7 +84,7 @@ export function ShoppingCartProvider({children}:
         }
 
     return (
-    <ShoppingCartContext.Provider value={{getItemQuantity, increaseCartQuantity, decreaseCartQuantity, removeFromCart}}>
+    <ShoppingCartContext.Provider value={{getItemQuantity, increaseCartQuantity, decreaseCartQuantity, removeFromCart, openCart, closeCart, cartItems, cartQuantity}}>
         {children}
     </ShoppingCartContext.Provider>
     )
