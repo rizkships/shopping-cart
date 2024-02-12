@@ -31,8 +31,26 @@ export function ShoppingCartProvider({children}:
         function getItemQuantity(id: number){
             return cartItems.find(item => item.id === id)?.quantity || 0
         }
+
+        function increaseCartQuantity(id: number){
+            // if we can find an items inside of our cart, then we have an item, so we want to check to see if we dont have an item, because 
+            // if our item doesn't already exist in the cart, then we need to add it to cart.
+            setCartItems(currItems => {
+                if (currItems.find(item => item.id === id) == null){
+                    return [...currItems, {id, quantity: 1}] // return all of our current items and we can add in a new item which has an id and a quantity of 1
+                } else { // otherwise, if the item exists, all we need to do is increment the quantity by 1
+                    return currItems.map(item => {
+                        if (item.id === id) { // if we found our item
+                            return {...item, quantity: item.quantity + 1} // keep everything the same and increment quantity by 1
+                        } else {
+                            return item 
+                        }
+                    })
+                }
+            })
+        }
     return (
-    <ShoppingCartContext.Provider value={{getItemQuantity}}>
+    <ShoppingCartContext.Provider value={{getItemQuantity, increaseCartQuantity}}>
         {children}
     </ShoppingCartContext.Provider>
     )
